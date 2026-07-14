@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 
-from .models import TaskStatus
+from .models import TaskPriority, TaskStatus
 from .storage import TaskStorage
 
 storage = TaskStorage()
@@ -15,12 +15,33 @@ STATUS_LABELS = {
     TaskStatus.DONE.value: "Concluído",
 }
 
+PRIORITY_LABELS = {
+    TaskPriority.BAIXA.value: "Baixa",
+    TaskPriority.MEDIA.value: "Média",
+    TaskPriority.ALTA.value: "Alta",
+}
+
 
 def _wants_json() -> bool:
     if request.is_json:
         return True
     best = request.accept_mimetypes.best_match(["application/json", "text/html"])
-    return best == "application/json" and request.accept_mimetypes[best] > request.accept_mimetypes["text/html"]
+    return (
+        best == "application/json"
+        and request.accept_mimetypes[best] > request.accept_mimetypes["text/html"]
+    )
+
+
+def _parse_status(raw: str | None):
+    if raw is None:
+        return None
+    return TaskStatus(raw)
+
+
+def _parse_priority(raw: str | None):
+    if raw is None:
+        return None
+    return TaskPriority(raw)
 
 
 def create_app() -> Flask:
@@ -37,6 +58,7 @@ def create_app() -> Flask:
             "index.html",
             tasks=storage.list_all(),
             labels=STATUS_LABELS,
+            priority_labels=PRIORITY_LABELS,
         )
 
     @app.get("/tasks")
@@ -59,17 +81,28 @@ def create_app() -> Flask:
         payload = request.get_json(silent=True) or {}
         title = payload.get("title") or request.form.get("title", "")
         description = payload.get("description") or request.form.get("description", "")
-        status_raw = payload.get("status") or request.form.get("status", TaskStatus.TODO.value)
+        status_raw = payload.get("status") or request.form.get(
+            "status", TaskStatus.TODO.value
+        )
+        priority_raw = payload.get("priority") or request.form.get(
+            "priority", TaskPriority.MEDIA.value
+        )
 
         try:
-            status = TaskStatus(status_raw)
+            status = _parse_status(status_raw)
+            priority = _parse_priority(priority_raw)
         except ValueError:
             if _wants_json():
-                return jsonify({"erro": f"Status inválido: {status_raw}"}), 400
+                return jsonify({"erro": "Status ou prioridade inválidos."}), 400
             return redirect(url_for("index"))
 
         try:
-            task = storage.create(title=title, description=description, status=status)
+            task = storage.create(
+                title=title,
+                description=description,
+                status=status,
+                priority=priority,
+            )
         except ValueError as exc:
             if _wants_json():
                 return jsonify({"erro": str(exc)}), 400
@@ -82,7 +115,7 @@ def create_app() -> Flask:
     @app.put("/tasks/<task_id>")
     @app.post("/tasks/<task_id>/update")
     def update_task(task_id: str):
-        """Atualiza título, descrição e/ou status de uma tarefa."""
+        """Atualiza título, descrição, status e/ou prioridade."""
         if storage.get(task_id) is None:
             if _wants_json() or request.method == "PUT":
                 return jsonify({"erro": "Tarefa não encontrada."}), 404
@@ -98,15 +131,19 @@ def create_app() -> Flask:
         status_raw = (
             payload.get("status") if "status" in payload else request.form.get("status")
         )
+        priority_raw = (
+            payload.get("priority")
+            if "priority" in payload
+            else request.form.get("priority")
+        )
 
-        status = None
-        if status_raw is not None:
-            try:
-                status = TaskStatus(status_raw)
-            except ValueError:
-                if _wants_json() or request.method == "PUT":
-                    return jsonify({"erro": f"Status inválido: {status_raw}"}), 400
-                return redirect(url_for("index"))
+        try:
+            status = _parse_status(status_raw)
+            priority = _parse_priority(priority_raw)
+        except ValueError:
+            if _wants_json() or request.method == "PUT":
+                return jsonify({"erro": "Status ou prioridade inválidos."}), 400
+            return redirect(url_for("index"))
 
         try:
             updated = storage.update(
@@ -114,6 +151,7 @@ def create_app() -> Flask:
                 title=title,
                 description=description,
                 status=status,
+                priority=priority,
             )
         except ValueError as exc:
             if _wants_json() or request.method == "PUT":
