@@ -17,6 +17,20 @@ def create_app() -> Flask:
     def health():
         return jsonify({"status": "ok"})
 
+    @app.get("/tasks")
+    def list_tasks():
+        """Lista todas as tarefas cadastradas."""
+        tasks = [task.to_dict() for task in storage.list_all()]
+        return jsonify(tasks), 200
+
+    @app.get("/tasks/<task_id>")
+    def get_task(task_id: str):
+        """Retorna uma tarefa pelo id."""
+        task = storage.get(task_id)
+        if task is None:
+            return jsonify({"erro": "Tarefa não encontrada."}), 404
+        return jsonify(task.to_dict()), 200
+
     @app.post("/tasks")
     def create_task():
         """Cria uma nova tarefa (JSON ou formulário)."""
