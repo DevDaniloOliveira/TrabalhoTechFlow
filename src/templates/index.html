@@ -118,8 +118,11 @@
       border-radius: 12px;
       padding: 0.85rem 0.9rem;
       margin-bottom: 0.7rem;
-      cursor: pointer;
+      cursor: grab;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .card:active {
+      cursor: grabbing;
     }
     .card:hover {
       transform: translateY(-1px);
@@ -208,6 +211,18 @@
       gap: 0.6rem;
       margin-top: 1.1rem;
     }
+    .actions-split {
+      justify-content: space-between;
+      align-items: center;
+    }
+    .column.drag-over {
+      outline: 2px dashed var(--accent);
+      outline-offset: -4px;
+      background: #eef6f6;
+    }
+    .card.dragging {
+      opacity: 0.45;
+    }
     .row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -232,25 +247,30 @@
 
   <div class="board">
     {% for column in columns %}
-      <section class="column" aria-label="{{ column.label }}">
+      <section class="column" data-status="{{ column.key }}" aria-label="{{ column.label }}">
         <div class="column-header">
           <h2>{{ column.label }}</h2>
           <span class="count">{{ column.tasks|length }}</span>
         </div>
-        {% if not column.tasks %}
-          <p class="empty">Nenhuma tarefa</p>
-        {% endif %}
-        {% for task in column.tasks %}
-          <button
-            type="button"
-            class="card"
-            data-open-task="{{ task.id }}"
-            aria-label="Abrir tarefa {{ task.title }}"
-          >
-            <p class="card-title">{{ task.title }}</p>
-            <span class="badge {{ task.priority.value }}">{{ priority_labels[task.priority.value] }}</span>
-          </button>
-        {% endfor %}
+        <div class="column-body">
+          {% if not column.tasks %}
+            <p class="empty">Nenhuma tarefa</p>
+          {% endif %}
+          {% for task in column.tasks %}
+            <button
+              type="button"
+              class="card"
+              draggable="true"
+              data-task-id="{{ task.id }}"
+              data-status="{{ task.status.value }}"
+              data-open-task="{{ task.id }}"
+              aria-label="Abrir tarefa {{ task.title }}"
+            >
+              <p class="card-title">{{ task.title }}</p>
+              <span class="badge {{ task.priority.value }}">{{ priority_labels[task.priority.value] }}</span>
+            </button>
+          {% endfor %}
+        </div>
       </section>
     {% endfor %}
   </div>
@@ -310,7 +330,7 @@
           <h3 id="titulo-task-{{ task.id }}">Detalhes da tarefa</h3>
           <button type="button" class="icon-btn" data-close-modal aria-label="Fechar">&times;</button>
         </header>
-        <form method="post" action="/tasks/{{ task.id }}/update">
+        <form id="form-update-{{ task.id }}" method="post" action="/tasks/{{ task.id }}/update">
           <label>Título</label>
           <input name="title" value="{{ task.title }}" required maxlength="120" />
 
@@ -335,17 +355,17 @@
               </select>
             </div>
           </div>
-
-          <div class="actions">
-            <button type="submit" class="btn">Salvar</button>
-            <button type="button" class="btn secondary" data-close-modal>Fechar</button>
-          </div>
         </form>
-        <form method="post" action="/tasks/{{ task.id }}/delete" onsubmit="return confirm('Excluir esta tarefa?');">
-          <div class="actions">
-            <button type="submit" class="btn danger">Excluir tarefa</button>
-          </div>
-        </form>
+        <form
+          id="form-delete-{{ task.id }}"
+          method="post"
+          action="/tasks/{{ task.id }}/delete"
+          onsubmit="return confirm('Excluir esta tarefa?');"
+        ></form>
+        <div class="actions actions-split">
+          <button type="submit" class="btn" form="form-update-{{ task.id }}">Salvar</button>
+          <button type="submit" class="btn danger" form="form-delete-{{ task.id }}">Excluir</button>
+        </div>
       </div>
     </div>
   {% endfor %}
@@ -365,8 +385,14 @@
         openModal(document.getElementById("modal-criar"));
       });
 
+      var suppressClick = false;
+
       document.querySelectorAll("[data-open-task]").forEach(function (btn) {
         btn.addEventListener("click", function () {
+          if (suppressClick) {
+            suppressClick = false;
+            return;
+          }
           openModal(document.getElementById("modal-task-" + btn.getAttribute("data-open-task")));
         });
       });
@@ -386,6 +412,63 @@
       document.addEventListener("keydown", function (event) {
         if (event.key !== "Escape") return;
         document.querySelectorAll(".modal-backdrop.open").forEach(closeModal);
+      });
+
+      // Drag and drop entre colunas (atualiza status)
+      var draggedCard = null;
+
+      document.querySelectorAll(".card[draggable='true']").forEach(function (card) {
+        card.addEventListener("dragstart", function (event) {
+          draggedCard = card;
+          suppressClick = true;
+          card.classList.add("dragging");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", card.getAttribute("data-task-id"));
+        });
+        card.addEventListener("dragend", function () {
+          card.classList.remove("dragging");
+          document.querySelectorAll(".column").forEach(function (col) {
+            col.classList.remove("drag-over");
+          });
+          draggedCard = null;
+          setTimeout(function () { suppressClick = false; }, 0);
+        });
+      });
+
+      document.querySelectorAll(".column").forEach(function (column) {
+        column.addEventListener("dragover", function (event) {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "move";
+          column.classList.add("drag-over");
+        });
+        column.addEventListener("dragleave", function (event) {
+          if (!column.contains(event.relatedTarget)) {
+            column.classList.remove("drag-over");
+          }
+        });
+        column.addEventListener("drop", function (event) {
+          event.preventDefault();
+          column.classList.remove("drag-over");
+          var taskId = event.dataTransfer.getData("text/plain");
+          var newStatus = column.getAttribute("data-status");
+          var card = draggedCard || document.querySelector('.card[data-task-id="' + taskId + '"]');
+          if (!card || !taskId || !newStatus) return;
+          if (card.getAttribute("data-status") === newStatus) return;
+
+          fetch("/tasks/" + taskId + "/update", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify({ status: newStatus })
+          }).then(function (res) {
+            if (!res.ok) throw new Error("Falha ao mover tarefa");
+            window.location.reload();
+          }).catch(function () {
+            alert("Não foi possível mover a tarefa.");
+          });
+        });
       });
     })();
   </script>
