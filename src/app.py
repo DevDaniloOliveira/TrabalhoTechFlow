@@ -2,12 +2,25 @@
 
 from __future__ import annotations
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 from .models import TaskStatus
 from .storage import TaskStorage
 
 storage = TaskStorage()
+
+STATUS_LABELS = {
+    TaskStatus.TODO.value: "A fazer",
+    TaskStatus.IN_PROGRESS.value: "Em progresso",
+    TaskStatus.DONE.value: "Concluído",
+}
+
+
+def _wants_json() -> bool:
+    if request.is_json:
+        return True
+    best = request.accept_mimetypes.best_match(["application/json", "text/html"])
+    return best == "application/json" and request.accept_mimetypes[best] > request.accept_mimetypes["text/html"]
 
 
 def create_app() -> Flask:
@@ -16,6 +29,15 @@ def create_app() -> Flask:
     @app.get("/health")
     def health():
         return jsonify({"status": "ok"})
+
+    @app.get("/")
+    def index():
+        """Interface web com lista e formulários de CRUD."""
+        return render_template(
+            "index.html",
+            tasks=storage.list_all(),
+            labels=STATUS_LABELS,
+        )
 
     @app.get("/tasks")
     def list_tasks():
@@ -42,21 +64,29 @@ def create_app() -> Flask:
         try:
             status = TaskStatus(status_raw)
         except ValueError:
-            return jsonify({"erro": f"Status inválido: {status_raw}"}), 400
+            if _wants_json():
+                return jsonify({"erro": f"Status inválido: {status_raw}"}), 400
+            return redirect(url_for("index"))
 
         try:
             task = storage.create(title=title, description=description, status=status)
         except ValueError as exc:
-            return jsonify({"erro": str(exc)}), 400
+            if _wants_json():
+                return jsonify({"erro": str(exc)}), 400
+            return redirect(url_for("index"))
 
-        return jsonify(task.to_dict()), 201
+        if _wants_json():
+            return jsonify(task.to_dict()), 201
+        return redirect(url_for("index"))
 
     @app.put("/tasks/<task_id>")
     @app.post("/tasks/<task_id>/update")
     def update_task(task_id: str):
         """Atualiza título, descrição e/ou status de uma tarefa."""
         if storage.get(task_id) is None:
-            return jsonify({"erro": "Tarefa não encontrada."}), 404
+            if _wants_json() or request.method == "PUT":
+                return jsonify({"erro": "Tarefa não encontrada."}), 404
+            return redirect(url_for("index"))
 
         payload = request.get_json(silent=True) or {}
         title = payload.get("title") if "title" in payload else request.form.get("title")
@@ -74,7 +104,9 @@ def create_app() -> Flask:
             try:
                 status = TaskStatus(status_raw)
             except ValueError:
-                return jsonify({"erro": f"Status inválido: {status_raw}"}), 400
+                if _wants_json() or request.method == "PUT":
+                    return jsonify({"erro": f"Status inválido: {status_raw}"}), 400
+                return redirect(url_for("index"))
 
         try:
             updated = storage.update(
@@ -84,9 +116,13 @@ def create_app() -> Flask:
                 status=status,
             )
         except ValueError as exc:
-            return jsonify({"erro": str(exc)}), 400
+            if _wants_json() or request.method == "PUT":
+                return jsonify({"erro": str(exc)}), 400
+            return redirect(url_for("index"))
 
-        return jsonify(updated.to_dict()), 200
+        if _wants_json() or request.method == "PUT":
+            return jsonify(updated.to_dict()), 200
+        return redirect(url_for("index"))
 
     @app.delete("/tasks/<task_id>")
     @app.post("/tasks/<task_id>/delete")
@@ -94,8 +130,12 @@ def create_app() -> Flask:
         """Remove uma tarefa pelo id."""
         deleted = storage.delete(task_id)
         if not deleted:
-            return jsonify({"erro": "Tarefa não encontrada."}), 404
-        return jsonify({"mensagem": "Tarefa removida com sucesso."}), 200
+            if _wants_json() or request.method == "DELETE":
+                return jsonify({"erro": "Tarefa não encontrada."}), 404
+            return redirect(url_for("index"))
+        if _wants_json() or request.method == "DELETE":
+            return jsonify({"mensagem": "Tarefa removida com sucesso."}), 200
+        return redirect(url_for("index"))
 
     return app
 

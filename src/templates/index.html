@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TechFlow — Tarefas</title>
+  <style>
+    :root {
+      --bg: #f3f6f8;
+      --ink: #1a2b33;
+      --muted: #5b6e76;
+      --accent: #0d6e6e;
+      --accent-dark: #0a5555;
+      --card: #ffffff;
+      --line: #d5e0e4;
+      --todo: #6b7c85;
+      --progress: #b86e00;
+      --done: #2f7d4a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, #d9ecec 0%, transparent 45%),
+        linear-gradient(180deg, #e8f1f3 0%, var(--bg) 40%);
+      min-height: 100vh;
+    }
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+    header h1 {
+      margin: 0 0 0.25rem;
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+    }
+    header p {
+      margin: 0 0 2rem;
+      color: var(--muted);
+    }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    h2 {
+      margin: 0 0 1rem;
+      font-size: 1.1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 0.35rem;
+      color: var(--muted);
+    }
+    input, textarea, select, button {
+      font: inherit;
+    }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      margin-bottom: 0.85rem;
+      background: #fbfdfe;
+    }
+    button, .btn {
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+    button:hover, .btn:hover { background: var(--accent-dark); }
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    button.danger {
+      background: #9b2c2c;
+    }
+    .task {
+      border-top: 1px solid var(--line);
+      padding: 1rem 0;
+    }
+    .task:first-of-type { border-top: 0; padding-top: 0; }
+    .task-title {
+      font-weight: 650;
+      margin-bottom: 0.25rem;
+    }
+    .task-desc {
+      color: var(--muted);
+      margin: 0 0 0.75rem;
+      white-space: pre-wrap;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+    .badge.todo { background: var(--todo); }
+    .badge.in_progress { background: var(--progress); }
+    .badge.done { background: var(--done); }
+    .row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+    .row > * { flex: 1; min-width: 140px; }
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+    .empty {
+      color: var(--muted);
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>TechFlow</h1>
+      <p>Gerenciador de tarefas para operações de logística</p>
+    </header>
+
+    <section>
+      <h2>Nova tarefa</h2>
+      <form method="post" action="/tasks">
+        <label for="title">Título</label>
+        <input id="title" name="title" required maxlength="120" placeholder="Ex.: Separar pedido #4821" />
+        <label for="description">Descrição</label>
+        <textarea id="description" name="description" rows="3" placeholder="Detalhes da operação"></textarea>
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="todo">A fazer</option>
+          <option value="in_progress">Em progresso</option>
+          <option value="done">Concluído</option>
+        </select>
+        <button type="submit">Criar tarefa</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Tarefas ({{ tasks|length }})</h2>
+      {% if not tasks %}
+        <p class="empty">Nenhuma tarefa cadastrada ainda.</p>
+      {% endif %}
+      {% for task in tasks %}
+        <article class="task">
+          <div class="task-title">{{ task.title }}</div>
+          <span class="badge {{ task.status.value }}">{{ labels[task.status.value] }}</span>
+          {% if task.description %}
+            <p class="task-desc">{{ task.description }}</p>
+          {% endif %}
+          <form method="post" action="/tasks/{{ task.id }}/update">
+            <div class="row">
+              <div>
+                <label>Título</label>
+                <input name="title" value="{{ task.title }}" required />
+              </div>
+              <div>
+                <label>Status</label>
+                <select name="status">
+                  <option value="todo" {% if task.status.value == 'todo' %}selected{% endif %}>A fazer</option>
+                  <option value="in_progress" {% if task.status.value == 'in_progress' %}selected{% endif %}>Em progresso</option>
+                  <option value="done" {% if task.status.value == 'done' %}selected{% endif %}>Concluído</option>
+                </select>
+              </div>
+            </div>
+            <label>Descrição</label>
+            <textarea name="description" rows="2">{{ task.description }}</textarea>
+            <div class="actions">
+              <button type="submit">Salvar</button>
+            </div>
+          </form>
+          <form method="post" action="/tasks/{{ task.id }}/delete" class="actions" onsubmit="return confirm('Excluir esta tarefa?');">
+            <button type="submit" class="danger">Excluir</button>
+          </form>
+        </article>
+      {% endfor %}
+    </section>
+  </main>
+</body>
+</html>
