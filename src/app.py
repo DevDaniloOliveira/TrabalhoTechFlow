@@ -53,10 +53,29 @@ def create_app() -> Flask:
 
     @app.get("/")
     def index():
-        """Interface web com lista e formulários de CRUD."""
+        """Board Kanban com modais de criação e detalhes."""
+        tasks = storage.list_all()
+        columns = [
+            {
+                "key": TaskStatus.TODO.value,
+                "label": STATUS_LABELS[TaskStatus.TODO.value],
+                "tasks": [t for t in tasks if t.status == TaskStatus.TODO],
+            },
+            {
+                "key": TaskStatus.IN_PROGRESS.value,
+                "label": STATUS_LABELS[TaskStatus.IN_PROGRESS.value],
+                "tasks": [t for t in tasks if t.status == TaskStatus.IN_PROGRESS],
+            },
+            {
+                "key": TaskStatus.DONE.value,
+                "label": STATUS_LABELS[TaskStatus.DONE.value],
+                "tasks": [t for t in tasks if t.status == TaskStatus.DONE],
+            },
+        ]
         return render_template(
             "index.html",
-            tasks=storage.list_all(),
+            columns=columns,
+            all_tasks=tasks,
             labels=STATUS_LABELS,
             priority_labels=PRIORITY_LABELS,
         )

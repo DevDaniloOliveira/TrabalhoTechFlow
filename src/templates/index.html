@@ -3,19 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TechFlow — Tarefas</title>
+  <title>TechFlow — Board</title>
   <style>
     :root {
-      --bg: #f3f6f8;
-      --ink: #1a2b33;
-      --muted: #5b6e76;
+      --bg: #e8eef1;
+      --ink: #15252c;
+      --muted: #5a6f78;
       --accent: #0d6e6e;
       --accent-dark: #0a5555;
+      --surface: #f7fafb;
       --card: #ffffff;
-      --line: #d5e0e4;
-      --todo: #6b7c85;
-      --progress: #b86e00;
-      --done: #2f7d4a;
+      --line: #cfdbe0;
+      --shadow: 0 10px 30px rgba(21, 37, 44, 0.08);
       --prio-baixa: #6b7c85;
       --prio-media: #b86e00;
       --prio-alta: #9b2c2c;
@@ -23,197 +22,455 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
+      min-height: 100vh;
       font-family: "Segoe UI", "Trebuchet MS", sans-serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at top left, #d9ecec 0%, transparent 45%),
-        linear-gradient(180deg, #e8f1f3 0%, var(--bg) 40%);
-      min-height: 100vh;
+        radial-gradient(circle at 12% 0%, #d5ecec 0%, transparent 42%),
+        linear-gradient(180deg, #dfe9ed 0%, var(--bg) 55%);
     }
-    main {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 2.5rem 1.25rem 4rem;
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(207, 219, 224, 0.8);
+      background: rgba(247, 250, 251, 0.85);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 5;
     }
-    header h1 {
-      margin: 0 0 0.25rem;
-      font-size: 2rem;
+    .brand h1 {
+      margin: 0;
+      font-size: 1.45rem;
       letter-spacing: -0.02em;
     }
-    header p {
-      margin: 0 0 2rem;
+    .brand p {
+      margin: 0.15rem 0 0;
       color: var(--muted);
+      font-size: 0.92rem;
     }
-    section {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
-    }
-    h2 {
-      margin: 0 0 1rem;
-      font-size: 1.1rem;
-    }
-    label {
-      display: block;
-      font-size: 0.85rem;
-      margin-bottom: 0.35rem;
-      color: var(--muted);
-    }
-    input, textarea, select, button {
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
       font: inherit;
-    }
-    input, textarea, select {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 0.65rem 0.75rem;
-      margin-bottom: 0.85rem;
-      background: #fbfdfe;
-    }
-    button, .btn {
+      cursor: pointer;
       background: var(--accent);
       color: #fff;
-      border: 0;
-      border-radius: 8px;
-      padding: 0.6rem 1rem;
-      cursor: pointer;
     }
-    button:hover, .btn:hover { background: var(--accent-dark); }
-    button.secondary {
+    .btn:hover { background: var(--accent-dark); }
+    .btn.secondary {
       background: transparent;
       color: var(--accent);
       border: 1px solid var(--accent);
     }
-    button.danger {
+    .btn.danger {
       background: #9b2c2c;
+      color: #fff;
     }
-    .task {
-      border-top: 1px solid var(--line);
-      padding: 1rem 0;
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(240px, 1fr));
+      gap: 1rem;
+      padding: 1.25rem 1.5rem 2.5rem;
+      align-items: start;
     }
-    .task:first-of-type { border-top: 0; padding-top: 0; }
-    .task-title {
+    .column {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      min-height: 420px;
+      padding: 0.85rem;
+      box-shadow: var(--shadow);
+    }
+    .column-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+      padding: 0.25rem 0.35rem;
+    }
+    .column-header h2 {
+      margin: 0;
+      font-size: 0.98rem;
+    }
+    .count {
+      min-width: 1.6rem;
+      height: 1.6rem;
+      padding: 0 0.4rem;
+      border-radius: 999px;
+      background: #d9e5e8;
+      color: var(--ink);
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      width: 100%;
+      text-align: left;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.85rem 0.9rem;
+      margin-bottom: 0.7rem;
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .card:active {
+      cursor: grabbing;
+    }
+    .card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(21, 37, 44, 0.08);
+    }
+    .card-title {
       font-weight: 650;
-      margin-bottom: 0.25rem;
-    }
-    .task-desc {
-      color: var(--muted);
-      margin: 0 0 0.75rem;
-      white-space: pre-wrap;
+      margin: 0 0 0.55rem;
+      line-height: 1.3;
     }
     .badge {
       display: inline-block;
-      font-size: 0.75rem;
-      padding: 0.2rem 0.55rem;
+      font-size: 0.72rem;
+      padding: 0.18rem 0.5rem;
       border-radius: 999px;
       color: #fff;
-      margin-bottom: 0.75rem;
     }
-    .badge.todo { background: var(--todo); }
-    .badge.in_progress { background: var(--progress); }
-    .badge.done { background: var(--done); }
     .badge.baixa { background: var(--prio-baixa); }
     .badge.media { background: var(--prio-media); }
     .badge.alta { background: var(--prio-alta); }
-    .row {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      align-items: end;
-    }
-    .row > * { flex: 1; min-width: 140px; }
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-top: 0.5rem;
-    }
     .empty {
       color: var(--muted);
+      font-size: 0.9rem;
+      padding: 0.5rem 0.35rem;
       margin: 0;
+    }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 28, 34, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 20;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(520px, 100%);
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 60px rgba(15, 28, 34, 0.25);
+      padding: 1.25rem;
+      max-height: calc(100vh - 2rem);
+      overflow: auto;
+    }
+    .modal header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .modal h3 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+    .icon-btn {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0.15rem 0.4rem;
+    }
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0.55rem 0 0.3rem;
+    }
+    input, textarea, select {
+      width: 100%;
+      font: inherit;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      background: #fbfdfe;
+    }
+    textarea { resize: vertical; min-height: 90px; }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1.1rem;
+    }
+    .actions-split {
+      justify-content: space-between;
+      align-items: center;
+    }
+    .column.drag-over {
+      outline: 2px dashed var(--accent);
+      outline-offset: -4px;
+      background: #eef6f6;
+    }
+    .card.dragging {
+      opacity: 0.45;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 900px) {
+      .board { grid-template-columns: 1fr; }
+      .column { min-height: auto; }
+      .row { grid-template-columns: 1fr; }
+      .topbar { align-items: stretch; flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <header>
+  <div class="topbar">
+    <div class="brand">
       <h1>TechFlow</h1>
-      <p>Gerenciador de tarefas para operações de logística</p>
-    </header>
+      <p>Board Kanban para operações de logística</p>
+    </div>
+    <button type="button" class="btn" id="btn-nova-tarefa">Nova tarefa</button>
+  </div>
 
-    <section>
-      <h2>Nova tarefa</h2>
-      <form method="post" action="/tasks">
-        <label for="title">Título</label>
-        <input id="title" name="title" required maxlength="120" placeholder="Ex.: Separar pedido #4821" />
-        <label for="description">Descrição</label>
-        <textarea id="description" name="description" rows="3" placeholder="Detalhes da operação"></textarea>
-        <label for="status">Status</label>
-        <select id="status" name="status">
-          <option value="todo">A fazer</option>
-          <option value="in_progress">Em progresso</option>
-          <option value="done">Concluído</option>
-        </select>
-        <label for="priority">Prioridade</label>
-        <select id="priority" name="priority">
-          <option value="baixa">Baixa</option>
-          <option value="media" selected>Média</option>
-          <option value="alta">Alta</option>
-        </select>
-        <button type="submit">Criar tarefa</button>
-      </form>
-    </section>
-
-    <section>
-      <h2>Tarefas ({{ tasks|length }})</h2>
-      {% if not tasks %}
-        <p class="empty">Nenhuma tarefa cadastrada ainda.</p>
-      {% endif %}
-      {% for task in tasks %}
-        <article class="task">
-          <div class="task-title">{{ task.title }}</div>
-          <span class="badge {{ task.status.value }}">{{ labels[task.status.value] }}</span>
-          <span class="badge {{ task.priority.value }}">{{ priority_labels[task.priority.value] }}</span>
-          {% if task.description %}
-            <p class="task-desc">{{ task.description }}</p>
+  <div class="board">
+    {% for column in columns %}
+      <section class="column" data-status="{{ column.key }}" aria-label="{{ column.label }}">
+        <div class="column-header">
+          <h2>{{ column.label }}</h2>
+          <span class="count">{{ column.tasks|length }}</span>
+        </div>
+        <div class="column-body">
+          {% if not column.tasks %}
+            <p class="empty">Nenhuma tarefa</p>
           {% endif %}
-          <form method="post" action="/tasks/{{ task.id }}/update">
-            <div class="row">
-              <div>
-                <label>Título</label>
-                <input name="title" value="{{ task.title }}" required />
-              </div>
-              <div>
-                <label>Status</label>
-                <select name="status">
-                  <option value="todo" {% if task.status.value == 'todo' %}selected{% endif %}>A fazer</option>
-                  <option value="in_progress" {% if task.status.value == 'in_progress' %}selected{% endif %}>Em progresso</option>
-                  <option value="done" {% if task.status.value == 'done' %}selected{% endif %}>Concluído</option>
-                </select>
-              </div>
-              <div>
-                <label>Prioridade</label>
-                <select name="priority">
-                  <option value="baixa" {% if task.priority.value == 'baixa' %}selected{% endif %}>Baixa</option>
-                  <option value="media" {% if task.priority.value == 'media' %}selected{% endif %}>Média</option>
-                  <option value="alta" {% if task.priority.value == 'alta' %}selected{% endif %}>Alta</option>
-                </select>
-              </div>
+          {% for task in column.tasks %}
+            <button
+              type="button"
+              class="card"
+              draggable="true"
+              data-task-id="{{ task.id }}"
+              data-status="{{ task.status.value }}"
+              data-open-task="{{ task.id }}"
+              aria-label="Abrir tarefa {{ task.title }}"
+            >
+              <p class="card-title">{{ task.title }}</p>
+              <span class="badge {{ task.priority.value }}">{{ priority_labels[task.priority.value] }}</span>
+            </button>
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+  </div>
+
+  <!-- Modal: criar -->
+  <div class="modal-backdrop" id="modal-criar" role="dialog" aria-modal="true" aria-labelledby="titulo-criar">
+    <div class="modal">
+      <header>
+        <h3 id="titulo-criar">Nova tarefa</h3>
+        <button type="button" class="icon-btn" data-close-modal aria-label="Fechar">&times;</button>
+      </header>
+      <form method="post" action="/tasks">
+        <label for="create-title">Título</label>
+        <input id="create-title" name="title" required maxlength="120" placeholder="Ex.: Separar pedido #4821" />
+
+        <label for="create-description">Descrição</label>
+        <textarea id="create-description" name="description" placeholder="Detalhes da operação"></textarea>
+
+        <div class="row">
+          <div>
+            <label for="create-status">Status</label>
+            <select id="create-status" name="status">
+              <option value="todo">A fazer</option>
+              <option value="in_progress">Em progresso</option>
+              <option value="done">Concluído</option>
+            </select>
+          </div>
+          <div>
+            <label for="create-priority">Prioridade</label>
+            <select id="create-priority" name="priority">
+              <option value="baixa">Baixa</option>
+              <option value="media" selected>Média</option>
+              <option value="alta">Alta</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn">Criar</button>
+          <button type="button" class="btn secondary" data-close-modal>Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modais: detalhes / edição / exclusão -->
+  {% for task in all_tasks %}
+    <div
+      class="modal-backdrop"
+      id="modal-task-{{ task.id }}"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-task-{{ task.id }}"
+    >
+      <div class="modal">
+        <header>
+          <h3 id="titulo-task-{{ task.id }}">Detalhes da tarefa</h3>
+          <button type="button" class="icon-btn" data-close-modal aria-label="Fechar">&times;</button>
+        </header>
+        <form id="form-update-{{ task.id }}" method="post" action="/tasks/{{ task.id }}/update">
+          <label>Título</label>
+          <input name="title" value="{{ task.title }}" required maxlength="120" />
+
+          <label>Descrição</label>
+          <textarea name="description">{{ task.description }}</textarea>
+
+          <div class="row">
+            <div>
+              <label>Status</label>
+              <select name="status">
+                <option value="todo" {% if task.status.value == 'todo' %}selected{% endif %}>A fazer</option>
+                <option value="in_progress" {% if task.status.value == 'in_progress' %}selected{% endif %}>Em progresso</option>
+                <option value="done" {% if task.status.value == 'done' %}selected{% endif %}>Concluído</option>
+              </select>
             </div>
-            <label>Descrição</label>
-            <textarea name="description" rows="2">{{ task.description }}</textarea>
-            <div class="actions">
-              <button type="submit">Salvar</button>
+            <div>
+              <label>Prioridade</label>
+              <select name="priority">
+                <option value="baixa" {% if task.priority.value == 'baixa' %}selected{% endif %}>Baixa</option>
+                <option value="media" {% if task.priority.value == 'media' %}selected{% endif %}>Média</option>
+                <option value="alta" {% if task.priority.value == 'alta' %}selected{% endif %}>Alta</option>
+              </select>
             </div>
-          </form>
-          <form method="post" action="/tasks/{{ task.id }}/delete" class="actions" onsubmit="return confirm('Excluir esta tarefa?');">
-            <button type="submit" class="danger">Excluir</button>
-          </form>
-        </article>
-      {% endfor %}
-    </section>
-  </main>
+          </div>
+        </form>
+        <form
+          id="form-delete-{{ task.id }}"
+          method="post"
+          action="/tasks/{{ task.id }}/delete"
+          onsubmit="return confirm('Excluir esta tarefa?');"
+        ></form>
+        <div class="actions actions-split">
+          <button type="submit" class="btn" form="form-update-{{ task.id }}">Salvar</button>
+          <button type="submit" class="btn danger" form="form-delete-{{ task.id }}">Excluir</button>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <script>
+    (function () {
+      function openModal(el) {
+        if (!el) return;
+        el.classList.add("open");
+      }
+      function closeModal(el) {
+        if (!el) return;
+        el.classList.remove("open");
+      }
+
+      document.getElementById("btn-nova-tarefa").addEventListener("click", function () {
+        openModal(document.getElementById("modal-criar"));
+      });
+
+      var suppressClick = false;
+
+      document.querySelectorAll("[data-open-task]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (suppressClick) {
+            suppressClick = false;
+            return;
+          }
+          openModal(document.getElementById("modal-task-" + btn.getAttribute("data-open-task")));
+        });
+      });
+
+      document.querySelectorAll("[data-close-modal]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          closeModal(btn.closest(".modal-backdrop"));
+        });
+      });
+
+      document.querySelectorAll(".modal-backdrop").forEach(function (backdrop) {
+        backdrop.addEventListener("click", function (event) {
+          if (event.target === backdrop) closeModal(backdrop);
+        });
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key !== "Escape") return;
+        document.querySelectorAll(".modal-backdrop.open").forEach(closeModal);
+      });
+
+      // Drag and drop entre colunas (atualiza status)
+      var draggedCard = null;
+
+      document.querySelectorAll(".card[draggable='true']").forEach(function (card) {
+        card.addEventListener("dragstart", function (event) {
+          draggedCard = card;
+          suppressClick = true;
+          card.classList.add("dragging");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", card.getAttribute("data-task-id"));
+        });
+        card.addEventListener("dragend", function () {
+          card.classList.remove("dragging");
+          document.querySelectorAll(".column").forEach(function (col) {
+            col.classList.remove("drag-over");
+          });
+          draggedCard = null;
+          setTimeout(function () { suppressClick = false; }, 0);
+        });
+      });
+
+      document.querySelectorAll(".column").forEach(function (column) {
+        column.addEventListener("dragover", function (event) {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "move";
+          column.classList.add("drag-over");
+        });
+        column.addEventListener("dragleave", function (event) {
+          if (!column.contains(event.relatedTarget)) {
+            column.classList.remove("drag-over");
+          }
+        });
+        column.addEventListener("drop", function (event) {
+          event.preventDefault();
+          column.classList.remove("drag-over");
+          var taskId = event.dataTransfer.getData("text/plain");
+          var newStatus = column.getAttribute("data-status");
+          var card = draggedCard || document.querySelector('.card[data-task-id="' + taskId + '"]');
+          if (!card || !taskId || !newStatus) return;
+          if (card.getAttribute("data-status") === newStatus) return;
+
+          fetch("/tasks/" + taskId + "/update", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify({ status: newStatus })
+          }).then(function (res) {
+            if (!res.ok) throw new Error("Falha ao mover tarefa");
+            window.location.reload();
+          }).catch(function () {
+            alert("Não foi possível mover a tarefa.");
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

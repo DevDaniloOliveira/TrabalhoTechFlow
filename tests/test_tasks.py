@@ -68,6 +68,19 @@ def test_listar_tarefas(client):
     assert len(resposta.get_json()) == 2
 
 
+def test_board_kanban_renderiza_colunas(client):
+    client.post("/tasks", json={"title": "No board", "status": "todo"})
+    pagina = client.get("/")
+    assert pagina.status_code == 200
+    html = pagina.data.decode("utf-8")
+    assert "A fazer" in html
+    assert "Em progresso" in html
+    assert "Concluído" in html
+    assert "Nova tarefa" in html
+    assert "No board" in html
+    assert 'id="modal-criar"' in html
+
+
 def test_modelo_rejeita_titulo_vazio():
     with pytest.raises(ValueError):
         Task(title="")
