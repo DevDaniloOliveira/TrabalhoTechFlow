@@ -31,25 +31,59 @@ Híbrido **Scrum + Kanban**:
 /
 ├── README.md
 ├── requirements.txt
+├── pytest.ini
 ├── .gitignore
-├── src/                 # Aplicação Flask
-├── tests/               # Testes Pytest
-├── docs/                # Diagramas e material de apoio
-└── .github/workflows/   # CI (GitHub Actions)
+├── src/
+│   ├── app.py              # Rotas Flask + interface
+│   ├── models.py           # Modelo Task
+│   ├── storage.py          # Persistência JSON
+│   ├── templates/          # HTML da interface
+│   └── data/               # tasks.json (gerado em runtime)
+├── tests/                  # Testes Pytest
+├── docs/                   # Material de apoio
+└── .github/workflows/ci.yml
 ```
 
 ## Como executar
 
-> Instruções completas serão refinadas na issue de documentação de execução. Preview:
+Requisitos: Python 3.12+ e `pip`.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+# 1. Clone o repositório
+git clone https://github.com/DevDaniloOliveira/TrabalhoTechFlow.git
+cd TrabalhoTechFlow
+
+# 2. Crie e ative o ambiente virtual
+python3 -m venv .venv
+source .venv/bin/activate          # Windows (PowerShell): .venv\Scripts\Activate.ps1
+
+# 3. Instale as dependências
 pip install -r requirements.txt
-python src/app.py
+
+# 4. Suba a aplicação
+PYTHONPATH=. python src/app.py
+# alternativa: PYTHONPATH=. flask --app src.app run --debug
 ```
 
-Acesse `http://127.0.0.1:5000` após a implementação da interface.
+Abra no navegador: [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+### Rodar os testes
+
+```bash
+source .venv/bin/activate
+pytest -q
+```
+
+### API JSON (opcional)
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/tasks` | Lista tarefas |
+| POST | `/tasks` | Cria tarefa (`{"title","description","status"}`) |
+| GET | `/tasks/<id>` | Busca por id |
+| PUT | `/tasks/<id>` | Atualiza tarefa |
+| DELETE | `/tasks/<id>` | Remove tarefa |
+| GET | `/health` | Health check |
 
 ## Mudança de escopo
 
