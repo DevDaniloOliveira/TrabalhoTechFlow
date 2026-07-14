@@ -88,6 +88,15 @@ def create_app() -> Flask:
 
         return jsonify(updated.to_dict()), 200
 
+    @app.delete("/tasks/<task_id>")
+    @app.post("/tasks/<task_id>/delete")
+    def delete_task(task_id: str):
+        """Remove uma tarefa pelo id."""
+        deleted = storage.delete(task_id)
+        if not deleted:
+            return jsonify({"erro": "Tarefa não encontrada."}), 404
+        return jsonify({"mensagem": "Tarefa removida com sucesso."}), 200
+
     return app
 
 
