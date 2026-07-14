@@ -14,8 +14,6 @@ Permitir que a equipe acompanhe o fluxo de trabalho, registre tarefas e atualize
 - Testes automatizados com Pytest
 - Pipeline CI com GitHub Actions
 
-> **Nota:** a feature de **prioridade** (baixa/média/alta) será introduzida como **mudança de escopo** ao longo do projeto, documentada nesta seção quando implementada.
-
 ## Metodologia
 
 Híbrido **Scrum + Kanban**:
@@ -79,7 +77,7 @@ pytest -q
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | GET | `/tasks` | Lista tarefas |
-| POST | `/tasks` | Cria tarefa (`{"title","description","status"}`) |
+| POST | `/tasks` | Cria tarefa (`title`, `description`, `status`, `priority`) |
 | GET | `/tasks/<id>` | Busca por id |
 | PUT | `/tasks/<id>` | Atualiza tarefa |
 | DELETE | `/tasks/<id>` | Remove tarefa |
@@ -87,7 +85,17 @@ pytest -q
 
 ## Mudança de escopo
 
-*(Preenchida quando a feature de prioridade for implementada.)*
+Durante o desenvolvimento, o cliente (startup de logística) solicitou **priorizar tarefas críticas** no fluxo operacional — por exemplo, atrasos de entrega, falhas em docas ou pedidos com SLA curto.
+
+**Justificativa:** o CRUD com status sozinho não bastava para distinguir urgência. Sem prioridade, a equipe tratava itens críticos no mesmo ritmo de tarefas rotineiras, aumentando risco operacional.
+
+**Adaptação realizada:**
+
+- Campo `priority` com valores `baixa`, `media` e `alta`
+- Seleção de prioridade na interface web
+- Listagem ordenada com tarefas de prioridade alta primeiro
+- Novos testes em `tests/test_priority.py`
+- Card correspondente no Kanban (issue #11) movido no quadro
 
 ## Licença
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .models import Task, TaskStatus
+from .models import Task, TaskPriority, TaskStatus
 
 DEFAULT_DATA_PATH = Path(__file__).resolve().parent / "data" / "tasks.json"
 
@@ -34,13 +34,29 @@ class TaskStorage:
         )
 
     def list_all(self) -> list[Task]:
-        return list(self._tasks.values())
+        """Lista tarefas com prioridade alta primeiro."""
+        return sorted(
+            self._tasks.values(),
+            key=lambda task: task.priority.rank,
+            reverse=True,
+        )
 
     def get(self, task_id: str) -> Task | None:
         return self._tasks.get(task_id)
 
-    def create(self, title: str, description: str = "", status: TaskStatus | str = TaskStatus.TODO) -> Task:
-        task = Task(title=title, description=description, status=status)
+    def create(
+        self,
+        title: str,
+        description: str = "",
+        status: TaskStatus | str = TaskStatus.TODO,
+        priority: TaskPriority | str = TaskPriority.MEDIA,
+    ) -> Task:
+        task = Task(
+            title=title,
+            description=description,
+            status=status,
+            priority=priority,
+        )
         self._tasks[task.id] = task
         self._save()
         return task
@@ -52,6 +68,7 @@ class TaskStorage:
         title: str | None = None,
         description: str | None = None,
         status: TaskStatus | str | None = None,
+        priority: TaskPriority | str | None = None,
     ) -> Task | None:
         task = self._tasks.get(task_id)
         if task is None:
@@ -59,11 +76,13 @@ class TaskStorage:
         new_title = title if title is not None else task.title
         new_description = description if description is not None else task.description
         new_status = status if status is not None else task.status
+        new_priority = priority if priority is not None else task.priority
         updated = Task(
             id=task.id,
             title=new_title,
             description=new_description,
             status=new_status,
+            priority=new_priority,
         )
         self._tasks[task_id] = updated
         self._save()

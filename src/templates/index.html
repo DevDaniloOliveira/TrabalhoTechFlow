@@ -16,6 +16,9 @@
       --todo: #6b7c85;
       --progress: #b86e00;
       --done: #2f7d4a;
+      --prio-baixa: #6b7c85;
+      --prio-media: #b86e00;
+      --prio-alta: #9b2c2c;
     }
     * { box-sizing: border-box; }
     body {
@@ -111,6 +114,9 @@
     .badge.todo { background: var(--todo); }
     .badge.in_progress { background: var(--progress); }
     .badge.done { background: var(--done); }
+    .badge.baixa { background: var(--prio-baixa); }
+    .badge.media { background: var(--prio-media); }
+    .badge.alta { background: var(--prio-alta); }
     .row {
       display: flex;
       gap: 0.5rem;
@@ -150,6 +156,12 @@
           <option value="in_progress">Em progresso</option>
           <option value="done">Concluído</option>
         </select>
+        <label for="priority">Prioridade</label>
+        <select id="priority" name="priority">
+          <option value="baixa">Baixa</option>
+          <option value="media" selected>Média</option>
+          <option value="alta">Alta</option>
+        </select>
         <button type="submit">Criar tarefa</button>
       </form>
     </section>
@@ -163,6 +175,7 @@
         <article class="task">
           <div class="task-title">{{ task.title }}</div>
           <span class="badge {{ task.status.value }}">{{ labels[task.status.value] }}</span>
+          <span class="badge {{ task.priority.value }}">{{ priority_labels[task.priority.value] }}</span>
           {% if task.description %}
             <p class="task-desc">{{ task.description }}</p>
           {% endif %}
@@ -178,6 +191,14 @@
                   <option value="todo" {% if task.status.value == 'todo' %}selected{% endif %}>A fazer</option>
                   <option value="in_progress" {% if task.status.value == 'in_progress' %}selected{% endif %}>Em progresso</option>
                   <option value="done" {% if task.status.value == 'done' %}selected{% endif %}>Concluído</option>
+                </select>
+              </div>
+              <div>
+                <label>Prioridade</label>
+                <select name="priority">
+                  <option value="baixa" {% if task.priority.value == 'baixa' %}selected{% endif %}>Baixa</option>
+                  <option value="media" {% if task.priority.value == 'media' %}selected{% endif %}>Média</option>
+                  <option value="alta" {% if task.priority.value == 'alta' %}selected{% endif %}>Alta</option>
                 </select>
               </div>
             </div>
