@@ -8,7 +8,7 @@ import pytest
 
 from src.app import create_app
 from src import app as app_module
-from src.models import Task, TaskStatus
+from src.models import Task
 from src.storage import TaskStorage
 
 
