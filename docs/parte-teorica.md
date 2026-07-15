@@ -117,7 +117,7 @@ flowchart LR
 
 > **Para o PDF:** o diagrama Mermaid acima já documenta os casos de uso. A imagem exportada correspondente está abaixo.
 
-![Diagrama de Casos de Uso](prints/04-uml-casos-de-uso.svg)
+![Diagrama de Casos de Uso](prints/04-uml-casos-de-uso.png)
 
 ---
 
@@ -170,7 +170,7 @@ classDiagram
 
 
 
-![Diagrama de Classes](prints/05-uml-classes.svg)
+![Diagrama de Classes](prints/05-uml-classes.png)
 
 ---
 
