@@ -115,15 +115,9 @@ flowchart LR
 | Mover entre colunas | Altera status por drag-and-drop no board                |
 
 
-> **Para o PDF:** se a instituição exigir notação UML clássica, redesenhe no draw.io/Lucidchart a partir deste esboço e cole a imagem abaixo.
+> **Para o PDF:** o diagrama Mermaid acima já documenta os casos de uso. A imagem exportada correspondente está abaixo.
 
-**PRINT — Diagrama de Casos de Uso (opcional se usar Mermaid exportado)**
-
-```text
-[Inserir imagem: docs/prints/04-uml-casos-de-uso.png]
-```
-
-Diagrama de Casos de Uso
+![Diagrama de Casos de Uso](prints/04-uml-casos-de-uso.svg)
 
 ---
 
@@ -176,13 +170,7 @@ classDiagram
 
 
 
-**PRINT — Diagrama de Classes (opcional se usar Mermaid exportado)**
-
-```text
-[Inserir imagem: docs/prints/05-uml-classes.png]
-```
-
-Diagrama de Classes
+![Diagrama de Classes](prints/05-uml-classes.svg)
 
 ---
 
@@ -248,7 +236,7 @@ As capturas abaixo evidenciam a gestão ágil, o histórico de evolução e o pi
 
 ### 8.1 Kanban com tarefas (GitHub Projects)
 
-Kanban GitHub Projects — TechFlow
+![Kanban GitHub Projects — TechFlow](prints/board-projeto-github.png)
 
 **Figura 1 — Quadro Kanban no GitHub Projects.**  
 O board **TechFlow** organiza o fluxo com colunas (Backlog, Ready, In progress, In review, Done). Há **mais de 10 cards** (24 em Done no momento da captura), cobrindo desde o setup do repositório até CI, mudança de escopo (prioridade) e a interface Kanban da aplicação. O card restante no Backlog (#23) corresponde à documentação teórica em andamento. Isso materializa a gestão ágil e reduz falhas de comunicação/visibilidade.
@@ -259,7 +247,7 @@ O board **TechFlow** organiza o fluxo com colunas (Backlog, Ready, In progress, 
 
 ### 8.2 Commits relevantes
 
-Histórico de commits do repositório
+![Histórico de commits do repositório](prints/commits.png)
 
 **Figura 2 — Histórico de commits em** `main`**.**  
 Os commits seguem mensagens semânticas em português (`feat:`, `docs:`, merges de PR). Destacam-se entregas incrementais como o board Kanban com modais (TF-13), o arraste de cards, a prioridade pós-mudança de escopo (TF-11) e a documentação de execução (TF-10). O volume supera o mínimo de 10 commits exigido e deixa rastreável cada evolução do sistema.
@@ -270,7 +258,7 @@ Os commits seguem mensagens semânticas em português (`feat:`, `docs:`, merges 
 
 ### 8.3 Workflow de CI funcionando
 
-GitHub Actions — workflow CI verde
+![GitHub Actions — workflow CI verde](prints/workflow-ci.png)
 
 **Figura 3 — Aba Actions com workflow CI bem-sucedido.**  
 Todos os runs recentes do workflow **CI** aparecem com status verde (sucesso), incluindo merges em `main` e PRs de feature (`TF-11`, `TF-12`, `TF-13`). O pipeline executa **flake8** (qualidade) e **Pytest** (testes), garantindo feedback automático a cada integração.
@@ -281,7 +269,7 @@ Todos os runs recentes do workflow **CI** aparecem com status verde (sucesso), i
 
 ### 8.4 Sistema em execução (board da aplicação)
 
-Board Kanban da aplicação TechFlow
+![Board Kanban da aplicação TechFlow](prints/sistema.png)
 
 **Figura 4 — Interface web do TechFlow em execução.**  
 A aplicação apresenta o board com colunas **A fazer / Em progresso / Concluído**, cards resumidos (título + prioridade) e o botão **Nova tarefa**. O exemplo mostra tarefas operacionais de logística com prioridades Baixa e Média, alinhado ao padrão de ferramentas de gestão de tarefas.
