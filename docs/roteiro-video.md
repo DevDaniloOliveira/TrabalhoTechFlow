@@ -1,55 +1,64 @@
 # Roteiro do Vídeo Pitch (até 4 minutos)
 
-**Objetivo:** apresentar o TechFlow cobrindo metodologia, demo, testes, CI e mudança de escopo.
+**Projeto:** TechFlow — Gerenciador de Tarefas Ágil  
+**Repositório:** https://github.com/DevDaniloOliveira/TrabalhoTechFlow  
 
 ## Antes de gravar
 
-1. Mergear o PR da prioridade (TF-11), se ainda aberto.
-2. Mover todos os cards do Kanban para refletir o estado final (maioria em Concluído).
-3. Subir a app: `PYTHONPATH=. python src/app.py`
-4. Abrir abas: interface (`localhost:5000`), Projects, Actions, README.
+1. Confirme que `main` está atualizada (board Kanban + prioridade + CI).
+2. Suba a app: `PYTHONPATH=. python src/app.py`
+3. Abra abas prontas:
+   - App (`http://127.0.0.1:5000`)
+   - GitHub Projects (Kanban)
+   - Actions (último run verde)
+   - README (seção Mudança de escopo)
+4. Tenha 2–3 tarefas de exemplo no board para demonstrar drag-and-drop.
 
 ---
 
 ## Roteiro com timestamps
 
-### 0:00 – 0:30 | Apresentação
-> “Olá, sou [Nome]. Este é o TechFlow, um gerenciador de tarefas criado para uma startup de logística, no contexto da disciplina de Engenharia de Software. O repositório público está no GitHub e segue um fluxo ágil com issues, pull requests e CI.”
+### 0:00 – 0:30 | Apresentação do projeto
+> “Olá, sou [Nome]. Este é o TechFlow, um gerenciador de tarefas desenvolvido pela TechFlow Solutions para uma startup de logística, no contexto da disciplina de Engenharia de Software. O repositório é público no GitHub e segue um fluxo ágil com issues, pull requests e integração contínua.”
 
-Mostrar: README / página inicial do repo.
+**Mostrar:** página do repositório / README.
 
-### 0:30 – 1:00 | Metodologia e Kanban
-> “Usamos um híbrido Scrum + Kanban. Cada funcionalidade virou uma issue e foi entregue por uma branch `feature/TF-XX` com PR. No Projects, o quadro tem as colunas A Fazer, Em Progresso e Concluído, com mais de dez cards.”
+### 0:30 – 1:00 | Metodologia ágil e Kanban
+> “Usamos um híbrido Scrum + Kanban. Cada funcionalidade virou uma issue entregue por branch `feature/TF-XX` e Pull Request. No GitHub Projects, o quadro organiza mais de dez cards no fluxo do projeto.”
 
-Mostrar: GitHub Projects com cards.
+**Mostrar:** GitHub Projects com os cards.
 
-### 1:00 – 2:00 | Demo do sistema
-> “Aqui está o sistema rodando. Vou criar uma tarefa operacional, alterar o status e definir prioridade alta — recurso pedido pelo cliente para destacar entregas críticas. Em seguida edito e excluo para mostrar o CRUD completo.”
+### 1:00 – 2:10 | Demonstração do sistema
+> “Aqui está o sistema rodando. O board da aplicação segue o padrão de ferramentas de gestão: colunas A fazer, Em progresso e Concluído. Vou criar uma tarefa pelo modal, abrir os detalhes, alterar a prioridade e arrastar o card para outra coluna para mudar o status.”
 
-Mostrar: navegador em `http://127.0.0.1:5000` — criar (prioridade alta), editar, listar ordenado, excluir.
+**Mostrar:**  
+1. Nova tarefa (modal)  
+2. Abrir card (detalhes / salvar)  
+3. Arrastar entre colunas  
 
-### 2:00 – 2:40 | Testes automatizados
-> “Os testes usam Pytest. Cobrem criação, validação de título, atualização, exclusão e a feature de prioridade. Vou rodar a suíte rapidamente.”
+### 2:10 – 2:40 | Testes automatizados
+> “Os testes usam Pytest e cobrem o CRUD, validações, prioridade e a renderização do board. Vou executar a suíte.”
 
-Mostrar: terminal com `pytest -q` (11 passed).
+**Mostrar:** terminal com `pytest -q` (todos passando).
 
-### 2:40 – 3:20 | GitHub Actions
-> “A cada pull request, o GitHub Actions roda flake8 e Pytest. Este é um workflow verde, evidência de integração contínua.”
+### 2:40 – 3:15 | GitHub Actions
+> “A cada pull request, o GitHub Actions roda flake8 e Pytest. Este é um workflow verde, evidência de integração contínua e controle de qualidade.”
 
-Mostrar: aba Actions com run bem-sucedido.
+**Mostrar:** aba Actions com run bem-sucedido.
 
-### 3:20 – 3:45 | Mudança de escopo
-> “No meio do projeto o cliente pediu priorização de tarefas críticas. Documentamos a justificativa no README, criamos o card no Kanban e implementamos o campo prioridade com testes novos — sem descartar o que já estava pronto.”
+### 3:15 – 3:40 | Mudança de escopo
+> “No meio do projeto o cliente pediu priorização de tarefas críticas. Criamos o card no Kanban, implementamos o campo prioridade, adicionamos testes e documentamos a justificativa no README — sem descartar o que já estava pronto.”
 
-Mostrar: seção “Mudança de escopo” no README + issue #11.
+**Mostrar:** seção “Mudança de escopo” no README + card correspondente no Project.
 
-### 3:45 – 4:00 | Reflexão final
-> “Esse exercício mostra por que Engenharia de Software importa no mercado: organização do trabalho, rastreabilidade, qualidade automatizada e capacidade de adaptar o escopo com segurança. Obrigado.”
+### 3:40 – 4:00 | Reflexão final
+> “Esse exercício mostra a importância da Engenharia de Software no mercado: organização do trabalho, rastreabilidade, qualidade automatizada e capacidade de adaptar o escopo com segurança. Obrigado.”
 
 ---
 
 ## Checklist pós-gravação
 
-- [ ] Vídeo ≤ 4 minutos
-- [ ] Link público (YouTube ou Drive)
-- [ ] Link colado no PDF teórico e, se quiser, no README
+- [ ] Vídeo com até 4 minutos
+- [ ] Publicado com **link público** (YouTube ou Drive)
+- [ ] Link colado na seção 9 de `parte-teorica.md` (e no PDF final)
+- [ ] Opcional: link no README do repositório
