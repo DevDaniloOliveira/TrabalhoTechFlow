@@ -8,8 +8,8 @@
 **Autor:** _______________________  
 **Data:** _______________________
 
-> Documento pronto para exportação em PDF/DOCX.  
-> Substitua os blocos `PRINT` pelas capturas reais (salve os arquivos em `docs/prints/`).
+> Documento de entrega da Parte Teórica.  
+> As prints obrigatórias já estão em `docs/prints/` e referenciadas na seção 8.
 
 ---
 
@@ -212,81 +212,41 @@ Isso reduz regressões e evidencia entrega confiável — alinhado à questão n
 
 ## 8. Prints comentados do GitHub
 
-> Salve as imagens em `docs/prints/` com os nomes abaixo (ou ajuste os caminhos).  
-> Em cada print, mantenha a **legenda/comentário** no PDF.
+As capturas abaixo evidenciam a gestão ágil, o histórico de evolução e o pipeline de qualidade no repositório público.
 
 ### 8.1 Kanban com tarefas (GitHub Projects)
 
-**Como capturar**
+![Kanban GitHub Projects — TechFlow](prints/board-projeto-github.png)
 
-1. Abra o Project **TechFlow** no GitHub  
-2. Mostre o board com **≥ 10 cards** e colunas de fluxo  
-3. Preferencialmente com a maioria em Done e o histórico visível  
-
-**Arquivo sugerido:** `docs/prints/01-kanban-github.png`
-
-```text
-[Inserir print do GitHub Projects aqui]
-```
-
-![Kanban GitHub Projects](prints/01-kanban-github.png)
-
-**Comentário:** O quadro materializa a gestão ágil do projeto. Cada card corresponde a uma issue/PR (ex.: setup, CRUD, testes, CI, mudança de escopo, board Kanban na UI). Isso mitiga má gestão de tarefas e falta de visibilidade.
+**Figura 1 — Quadro Kanban no GitHub Projects.**  
+O board **TechFlow** organiza o fluxo com colunas (Backlog, Ready, In progress, In review, Done). Há **mais de 10 cards** (24 em Done no momento da captura), cobrindo desde o setup do repositório até CI, mudança de escopo (prioridade) e a interface Kanban da aplicação. O card restante no Backlog (#23) corresponde à documentação teórica em andamento. Isso materializa a gestão ágil e reduz falhas de comunicação/visibilidade.
 
 ---
 
 ### 8.2 Commits relevantes
 
-**Como capturar**
+![Histórico de commits do repositório](prints/commits.png)
 
-1. Aba **Commits** do repositório **ou** lista de Pull Requests mergeados  
-2. Destaque mensagens semânticas (`feat:`, `test:`, `ci:`, `docs:`)  
-
-**Arquivo sugerido:** `docs/prints/02-commits.png`
-
-```text
-[Inserir print do histórico de commits / PRs aqui]
-```
-
-![Commits relevantes](prints/02-commits.png)
-
-**Comentário:** O histórico com mais de 10 commits descritivos registra a evolução incremental do sistema e facilita auditoria das mudanças (incluindo a feature de prioridade e o redesign do board).
+**Figura 2 — Histórico de commits em `main`.**  
+Os commits seguem mensagens semânticas em português (`feat:`, `docs:`, merges de PR). Destacam-se entregas incrementais como o board Kanban com modais (TF-13), o arraste de cards, a prioridade pós-mudança de escopo (TF-11) e a documentação de execução (TF-10). O volume supera o mínimo de 10 commits exigido e deixa rastreável cada evolução do sistema.
 
 ---
 
 ### 8.3 Workflow de CI funcionando
 
-**Como capturar**
+![GitHub Actions — workflow CI verde](prints/workflow-ci.png)
 
-1. Aba **Actions** do repositório  
-2. Abra um run do workflow **CI** com status **verde**  
-3. Mostre os steps (flake8 + Pytest)  
-
-**Arquivo sugerido:** `docs/prints/03-github-actions.png`
-
-```text
-[Inserir print do GitHub Actions (CI verde) aqui]
-```
-
-![GitHub Actions CI](prints/03-github-actions.png)
-
-**Comentário:** A integração contínua executa testes e checagem de qualidade a cada alteração, aumentando a confiança nas entregas e reduzindo falhas em produção.
+**Figura 3 — Aba Actions com workflow CI bem-sucedido.**  
+Todos os runs recentes do workflow **CI** aparecem com status verde (sucesso), incluindo merges em `main` e PRs de feature (`TF-11`, `TF-12`, `TF-13`). O pipeline executa **flake8** (qualidade) e **Pytest** (testes), garantindo feedback automático a cada integração.
 
 ---
 
-### 8.4 (Opcional) Sistema em execução
+### 8.4 Sistema em execução (board da aplicação)
 
-Útil para reforçar a demo no PDF (também coberta no vídeo).
+![Board Kanban da aplicação TechFlow](prints/sistema.png)
 
-**Arquivo sugerido:** `docs/prints/06-app-board.png`
-
-```text
-[Inserir print do board Kanban da aplicação em localhost:5000]
-```
-
-![Aplicação TechFlow](prints/06-app-board.png)
-
-**Comentário:** Interface no padrão de ferramentas de gestão: colunas por fase, cards resumidos e detalhes no modal.
+**Figura 4 — Interface web do TechFlow em execução.**  
+A aplicação apresenta o board com colunas **A fazer / Em progresso / Concluído**, cards resumidos (título + prioridade) e o botão **Nova tarefa**. O exemplo mostra tarefas operacionais de logística com prioridades Baixa e Média, alinhado ao padrão de ferramentas de gestão de tarefas.
 
 ---
 
@@ -312,9 +272,9 @@ Isso reduz regressões e evidencia entrega confiável — alinhado à questão n
 
 | Entregável | Status |
 |------------|--------|
-| PDF/DOCX teórico (seções 1–8) | [ ] |
-| Prints Kanban / Commits / Actions | [ ] |
-| Diagramas UML (casos de uso + classes) | [ ] |
+| PDF/DOCX teórico (seções 1–8) | [ ] exportar a partir deste Markdown |
+| Prints Kanban / Commits / Actions / App | [x] em `docs/prints/` |
+| Diagramas UML (casos de uso + classes) | [ ] exportar Mermaid ou redesenhar |
 | Repo público com app + testes + CI | [x] |
 | Mudança de escopo documentada | [x] |
 | Vídeo ≤ 4 min com link público | [ ] |
