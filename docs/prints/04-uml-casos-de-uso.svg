@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420">
+  <rect width="920" height="420" fill="#f7fafb"/>
+  <text x="460" y="36" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#15252c">Diagrama de Casos de Uso  TechFlow</text>
+
+  <!-- Actor -->
+  <circle cx="90" cy="180" r="18" fill="none" stroke="#15252c" stroke-width="2"/>
+  <line x1="90" y1="198" x2="90" y2="250" stroke="#15252c" stroke-width="2"/>
+  <line x1="60" y1="220" x2="120" y2="220" stroke="#15252c" stroke-width="2"/>
+  <line x1="90" y1="250" x2="70" y2="290" stroke="#15252c" stroke-width="2"/>
+  <line x1="90" y1="250" x2="110" y2="290" stroke="#15252c" stroke-width="2"/>
+  <text x="90" y="320" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#15252c">UsuarioGestor</text>
+
+  <!-- System boundary -->
+  <rect x="180" y="70" width="700" height="300" rx="12" fill="#ffffff" stroke="#0d6e6e" stroke-width="2"/>
+  <text x="530" y="95" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#0d6e6e">TechFlow</text>
+
+  <!-- Use cases -->
+  <ellipse cx="340" cy="140" rx="110" ry="28" fill="#e8f4f4" stroke="#0d6e6e" stroke-width="1.5"/>
+  <text x="340" y="145" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#15252c">Criar tarefa</text>
+
+  <ellipse cx="560" cy="140" rx="120" ry="28" fill="#e8f4f4" stroke="#0d6e6e" stroke-width="1.5"/>
+  <text x="560" y="145" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#15252c">Visualizar board Kanban</text>
+
+  <ellipse cx="780" cy="140" rx="90" ry="28" fill="#e8f4f4" stroke="#0d6e6e" stroke-width="1.5"/>
+  <text x="780" y="145" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#15252c">Abrir detalhes</text>
+
+  <ellipse cx="340" cy="230" rx="110" ry="28" fill="#e8f4f4" stroke="#0d6e6e" stroke-width="1.5"/>
+  <text x="340" y="235" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#15252c">Atualizar tarefa</text>
+
+  <ellipse cx="560" cy="230" rx="100" ry="28" fill="#e8f4f4" stroke="#0d6e6e" stroke-width="1.5"/>
+  <text x="560" y="235" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#15252c">Excluir tarefa</text>
+
+  <ellipse cx="780" cy="230" rx="100" ry="28" fill="#e8f4f4" stroke="#0d6e6e" stroke-width="1.5"/>
+  <text x="780" y="235" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#15252c">Definir prioridade</text>
+
+  <ellipse cx="560" cy="320" rx="140" ry="28" fill="#e8f4f4" stroke="#0d6e6e" stroke-width="1.5"/>
+  <text x="560" y="325" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#15252c">Mover tarefa entre colunas</text>
+
+  <!-- Associations -->
+  <line x1="120" y1="200" x2="230" y2="145" stroke="#5a6f78" stroke-width="1.2"/>
+  <line x1="120" y1="205" x2="440" y2="145" stroke="#5a6f78" stroke-width="1.2"/>
+  <line x1="120" y1="210" x2="690" y2="145" stroke="#5a6f78" stroke-width="1.2"/>
+  <line x1="120" y1="215" x2="230" y2="230" stroke="#5a6f78" stroke-width="1.2"/>
+  <line x1="120" y1="220" x2="460" y2="230" stroke="#5a6f78" stroke-width="1.2"/>
+  <line x1="120" y1="225" x2="680" y2="230" stroke="#5a6f78" stroke-width="1.2"/>
+  <line x1="120" y1="235" x2="420" y2="315" stroke="#5a6f78" stroke-width="1.2"/>
+</svg>
